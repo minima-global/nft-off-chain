@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { fetchNfts, getAllMyNfts } from './../../../state/nftwallet.state'
 import { useAppDispatch, useAppSelector } from './../../../state/hooks'
-import { commands } from './../../../minima'
 
 import Grid from '@mui/material/Grid'
 import NftCard from './NftfCard'
@@ -9,13 +8,11 @@ import NftCard from './NftfCard'
 const NftWallet = () => {
     const dispatch = useAppDispatch()
     const nfts = useAppSelector(getAllMyNfts)
+    console.log('nfts', nfts)
 
     useEffect(() => {
         dispatch(fetchNfts())
     }, [dispatch])
-
-    commands.status().then(console.log)
-    commands.getAllMyTokens().then(console.log)
 
     return (
         <>

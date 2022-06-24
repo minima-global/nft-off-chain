@@ -31,6 +31,7 @@
         "start": "react-scripts start",
         "build": "react-scripts build && zip -r minima-nft-offchain.minidapp build",
         "build-zip": "npm run build && rm nft_* && date=$(date +%Y_%m_%d_%H%M) && cd build && zip -r nft_${date}.zip . && mv nft_${date}.zip ../",
+        "build-reload": "npm run build && rm nft_* && date=$(date +%Y_%m_%d_%H%M) && cd build && zip -r nft_${date}.zip . && mv nft_${date}.zip ../ && cd .. && node app-reload.js nft_${date}.zip",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },
@@ -58,6 +59,7 @@
         "printWidth": 120
     },
     "devDependencies": {
-        "@types/lodash": "^4.14.175"
+        "@types/lodash": "^4.14.175",
+        "axios": "^0.27.2"
     }
 }

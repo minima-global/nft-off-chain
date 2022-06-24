@@ -26,7 +26,7 @@ export const marketplaceSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder.addCase(fetchNfts.fulfilled, (state, action) => {
-            state.nfts.push(action.payload)
+            state.nfts = action.payload
         })
     },
 })

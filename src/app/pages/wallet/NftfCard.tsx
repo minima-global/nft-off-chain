@@ -6,9 +6,10 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import { sendNftToAuction } from './../../../state/nftwallet.state'
 import CardMedia from '@mui/material/CardMedia'
+import { util } from './../../../minima'
 
 interface IProps {
-    nft: Token
+    nft: any
 }
 
 const NftCard = ({ nft }: IProps) => {
@@ -21,27 +22,7 @@ const NftCard = ({ nft }: IProps) => {
     }
 
     const fallbackImage = 'https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg'
-    const imageField: any = nft.description
-    let imageUrl = null // populate with image if we have one, or keep null if we don't
-
-    // TODO: move this into the auction object in redux so it doesnt parse on every render
-
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=1554068
-    // Firefox users still see error in console even if we catch it
-    try {
-        var parser = new DOMParser()
-        const doc = parser.parseFromString(imageField, 'application/xml')
-        const errorNode2 = doc.querySelector('parsererror')
-        if (errorNode2) {
-            console.log('Token does not contain an image: ' + nft.token)
-        } else {
-            console.log('parsing succeeded')
-            var imageString = doc.getElementsByTagName('artimage')[0].innerHTML
-            imageUrl = `data:image/jpeg;base64,${imageString}`
-        }
-    } catch (err) {
-        console.error('Token does not contain an image: ' + nft.token)
-    }
+    const imageUrl = decodeURI(util.hexToString(nft.token.url))
 
     return (
         <>
@@ -54,7 +35,7 @@ const NftCard = ({ nft }: IProps) => {
 
                 <CardContent>
                     <Typography variant="h5">
-                        {nft.token ? <div>{nft.token}</div> : <div>Token not found</div>}
+                        {nft.token.name ? <div>{nft.token.name}</div> : <div>Token not found</div>}
                     </Typography>
                     <Typography component="div" variant="caption">
                         tokenId: {nft.tokenid}

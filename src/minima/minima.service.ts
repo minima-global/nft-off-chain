@@ -10,8 +10,8 @@ const getAllMyNFTs = () => {
  * @param coin
  * @returns true if the coins is an NFT.
  */
-function isCoinNFTAndSendable(coin: Token) {
-    return coin.decimals === '0' && parseInt(coin.sendable) > 0
+function isCoinNFTAndSendable(coin: any) {
+    return typeof coin.token === 'object' && coin.token.nft && parseInt(coin.sendable) > 0
 }
 
 export const minima_service = {
