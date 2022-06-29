@@ -5,7 +5,7 @@
 -- seller creates transaction
 txncreate id:swap
 
--- seller uses their address to pay the 10 minima
+-- seller uses their address to accept the 10 minima
 txnoutput id:swap address:MxG083KW1NGVDMUCSH72F05SY43TPPPUSRQ6ZQVZUQRZ7NRJZ4R6BMF9F72SKN1 amount:10 tokenid:0x00
 
 -- seller adds the coinid of the nft (found with coins command)
