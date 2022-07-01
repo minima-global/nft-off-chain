@@ -4,7 +4,7 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import { sendNftToAuction } from './../../../state/nftwallet.state'
+import { createAuction } from './../../../state/marketplace.state'
 import CardMedia from '@mui/material/CardMedia'
 import { util } from './../../../minima'
 
@@ -17,7 +17,7 @@ const NftCard = ({ nft }: IProps) => {
 
     const onAuctionNft = (nft: Token) => {
         return () => {
-            dispatch(sendNftToAuction(nft))
+            dispatch(createAuction(nft))
         }
     }
 

@@ -15,12 +15,9 @@ export const fetchNfts = createAsyncThunk('nftwallet/fetchNfts', async () => {
     return minima_service.getAllMyNFTs()
 })
 
-export const sendNftToAuction = createAsyncThunk('nftwallet/sendNftToAuction', async (nft: any) => {
-    // return minima_service.getAllMyNFTs()
-})
 
 // creates actions and reducers
-export const marketplaceSlice = createSlice({
+export const nftWalletSlice = createSlice({
     name: 'nftwallet',
     initialState: initialNftwalletState,
     reducers: {},
@@ -32,8 +29,8 @@ export const marketplaceSlice = createSlice({
 })
 
 // export reducers and actions
-const nftWalletActions = marketplaceSlice.actions
-const nftWalletReducer = marketplaceSlice.reducer
+const nftWalletActions = nftWalletSlice.actions
+const nftWalletReducer = nftWalletSlice.reducer
 
 export default nftWalletReducer
 
