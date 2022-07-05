@@ -2,9 +2,10 @@ import { createAsyncThunk, createAction, createSlice, PayloadAction, createSelec
 import { RootState, AppThunk } from './store'
 import { enqueueSnackbar } from './notifications.state'
 import { marketplace_service } from '../WeTransfer/marketplace.service'
+import { AuctionDB } from '../WeTransfer/Auction'
 
 export interface MarketplaceState {
-    auctions: any[]
+    auctions: AuctionDB[]
 }
 
 const initialMarketplaceState: MarketplaceState = {
@@ -16,7 +17,7 @@ export const fetchAllAuctions = createAsyncThunk('marketplace/fetchAllAuctions',
 })
 
 export const createAuction = createAsyncThunk('marketplace/createAuction', async (nft: any) => {
-    return marketplace_service.listNFTForAuction(nft)
+    return marketplace_service.listNFTForAuction(nft, 20, 'some-user-id')
 })
 
 export const marketplaceSlice = createSlice({

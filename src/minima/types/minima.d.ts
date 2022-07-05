@@ -75,37 +75,28 @@ interface NetworkPeer {
     connected: string;
 }
 
-interface MinimaToken {
-    token: string & CustomTokenJson;
-    tokenid: string;
-    confirmed: string;
-    unconfirmed: string;
-    sendable: string;
-    total: string;
-}
-
-interface CustomTokenJson {
-    name: string;
-    description: string;
-    icon: string;
-}
-
 interface Token {
-    tokenid: string;
-    token: string;
-    total: string;
-    sendable: string;
-    unconfirmed: string;
-    confirmed: string;
-    decimals: string;
-    mempool: string;
-    coinid?: string;
-    totalamount?: string;
-    scale?: string;
-    description?: string;
-    icon?: string;
-    proof?: string;
-    script?: string;
+    tokenid: string
+    token: string | TokenNFTDetail
+    total: string
+    sendable: string
+    unconfirmed: string
+    confirmed: string
+    decimals: string
+    coinid?: string
+    totalamount?: string
+    scale?: string
+    description?: string
+    icon?: string
+    proof?: string
+    script?: string
+}
+
+interface TokenNFTDetail {
+    name: string
+    description: string
+    url: string
+    nft: boolean
 }
 
 interface NetworkStatus {
