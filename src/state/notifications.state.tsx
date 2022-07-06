@@ -10,7 +10,7 @@ const initialNotificationsState: NotificationsState = {
 }
 
 export const notificationsSlice = createSlice({
-    name: 'appInit',
+    name: 'notifications',
     initialState: initialNotificationsState,
     reducers: {
         enqueueSnackbar: (state, action) => {

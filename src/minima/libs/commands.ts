@@ -1,3 +1,5 @@
+import { util } from '../util'
+
 const status = (): Promise<Status> => {
     return new Promise((resolve, reject) => {
         MDS.cmd('status', (data: any) => {
@@ -66,10 +68,25 @@ function getAllMyTokens(): Promise<Token[]> {
     })
 }
 
+function sendMaximaMessageToContactById(id: number, message: string): Promise<any> {
+    const hexMessage = util.stringToHex(message)
+    const command = `maxima action:send id:${id} data:${hexMessage} application:nft-off-chain`
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
 export const commands = {
     status,
     txpow_block,
     txpow_txpowid,
     txpow_address,
     getAllMyTokens,
+    sendMaximaMessageToContactById,
 }
