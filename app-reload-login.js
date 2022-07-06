@@ -9,7 +9,7 @@ const minimaRpcUrl = 'http://127.0.0.1:9002'
 console.log(process.argv)
 
 if (process.argv.length < 3) {
-    throw 'missing new minidapp path'
+    throw 'missing new minidapp filename'
 }
 
 const newZipFileName = process.argv[2]

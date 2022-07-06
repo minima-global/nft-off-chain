@@ -16,7 +16,7 @@ const Marketplace = () => {
 
     return (
         <>
-            <h1>Marketplace 2</h1>
+            <h1>Marketplace</h1>
             <Grid container spacing={2}>
                 {auctions.map((auction, i) => (
                     <Grid item xs={12} md={6} lg={4} xl={3}>
