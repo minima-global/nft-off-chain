@@ -316,4 +316,14 @@ interface State {
     data: string;
     keeper: string;
 }
-  
+ 
+interface MaximaMessage {
+    application: string
+    data: string
+    from: string
+    msgid: string
+    random: string
+    time: string
+    timemilli: number
+    to: string
+}

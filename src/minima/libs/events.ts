@@ -38,18 +38,8 @@ interface NewBalanceData {
 }
 
 interface MaximaResponse {
-    event: 'MAXIMA';
-    data: MaximaData;
-}
-interface MaximaData {
-    application: string;
-    data: string;
-    from: string;
-    msgid: string;
-    random: string;
-    time: string;
-    timemilli: number;
-    to: string;
+    event: 'MAXIMA'
+    data: MaximaMessage
 }
 
 
@@ -60,9 +50,9 @@ let whenNewBlock = (d: NewBlockData) => {
 let whenMining = (d: MiningData) => {
     console.log("MINIMG event ... please resgister custom callback", d);
 };
-let whenMaxima = (d: MaximaData) => {
-    console.log("MAXIMA event ... please resgister custom callback", d);
-};
+let whenMaxima = (d: MaximaMessage) => {
+    console.log('MAXIMA event ... please resgister custom callback', d)
+}
 let whenNewBalance = (d: NewBalanceData) => {
     console.log("NEW BALANCE event ... please resgister custom callback", d);
 };
@@ -122,8 +112,8 @@ function onMining(callback: (data: MiningData) => void) {
     whenMining = callback;
 }
 
-function onMaxima(callback: (data: MaximaData) => void) {
-    whenMaxima = callback;
+function onMaxima(callback: (data: MaximaMessage) => void) {
+    whenMaxima = callback
 }
 
 function onNewBalance(callback: (data: NewBalanceData) => void) {
