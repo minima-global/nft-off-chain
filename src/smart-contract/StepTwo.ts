@@ -1,16 +1,16 @@
-export interface StepOne {
+export interface StepTwo {
     step: number
 
     // fields used to create the transaction
     txnId: string
 
     // for outputs
-    sellerAddress: string
-    minimaAmount: number
-    minimaTokenId: string
+    buyerAddress: string
+    nftAmount: number
+    nftTokenId: string
 
     // for inputs
-    nftCoinId: string
+    minimaCoinId: string
 
     // partially created transaction data
     txnData: string
