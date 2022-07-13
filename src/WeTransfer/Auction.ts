@@ -5,7 +5,7 @@ export interface AuctionCandidate {
     nftDescription: string
     nftUrl: string
     nftTokenId: string
-    nftPrice: number
+    nftPrice: number //TODO: convert to Decimal??
     nftSellerId: string
     detailsJson?: TokenDetails
 }

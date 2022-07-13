@@ -6,7 +6,7 @@ export interface StepTwo {
 
     // for outputs
     buyerAddress: string
-    nftAmount: number
+    nftAmount: number // will only be 1
     nftTokenId: string
 
     // for inputs

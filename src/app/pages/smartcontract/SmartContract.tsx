@@ -1,7 +1,13 @@
 import { useState } from 'react'
 
-import { commands } from '../../../minima'
-import { sendStepOneData, sendStepTwoData } from './../../../state/smartcontract.state'
+import { minima_service } from '../../../minima'
+import {
+    sendStepOneData,
+    sendStepTwoData,
+    buildStepOne,
+    buildStepTwo,
+    signAndPostTransaction,
+} from './../../../state/smartcontract.state'
 import { useAppDispatch, useAppSelector } from './../../../state/hooks'
 
 import Box from '@mui/material/Box'
@@ -9,6 +15,7 @@ import TextField from '@mui/material/TextField'
 import { Button } from '@mui/material'
 import { StepOne } from '../../../smart-contract/StepOne'
 import { StepTwo } from '../../../smart-contract/StepTwo'
+import Decimal from 'decimal.js'
 
 const SmartContract = () => {
     const dispatch = useAppDispatch()
@@ -16,9 +23,11 @@ const SmartContract = () => {
         step: 1,
         txnId: '',
         sellerAddress: '',
-        minimaAmount: 1,
+        minimaAmount: new Decimal(1),
         minimaTokenId: '0x00',
         nftCoinId: '',
+        nftTokenId: '',
+        nftTokenIdData: '',
         txnData: '',
     }
     const initialStepTwo: StepTwo = {
@@ -32,15 +41,21 @@ const SmartContract = () => {
     }
     const [stepOne, setStepOne] = useState(initialStepOne)
     const [stepTwo, setStepTwo] = useState(initialStepTwo)
+    const [postTransactionId, setPostTransactionId] = useState('')
 
     const sendTestMessageToFirstContact = () => {
-        commands.sendMaximaMessageToContactById(1, 'test').then(console.log)
+        minima_service.sendTestMessageToFirstContact('test').then(console.log)
     }
 
     const stepOneFieldChange = (event: any) => {
         const newValue = event.target.value
         const field = event.target.name
         setStepOne({ ...stepOne, [field]: newValue })
+    }
+
+    const onBuildStepOneClicked = () => {
+        console.log('onBuildStepOneClicked', stepOne)
+        dispatch(buildStepOne(stepOne))
     }
 
     const onSendStepOneClicked = () => {
@@ -54,9 +69,24 @@ const SmartContract = () => {
         setStepTwo({ ...stepTwo, [field]: newValue })
     }
 
+    const onBuildStepTwoClicked = () => {
+        console.log('onBuildStepTwoClicked', stepTwo)
+        dispatch(buildStepTwo(stepTwo))
+    }
+
     const onSendStepTwoClicked = () => {
         console.log('onSendStepTwoClicked', stepTwo)
         dispatch(sendStepTwoData(stepTwo))
+    }
+
+    const transactionIdFieldChange = (event: any) => {
+        const newValue = event.target.value
+        setPostTransactionId(newValue)
+    }
+
+    const onSignAndPostClicked = () => {
+        console.log('onSignAndPostClicked', postTransactionId)
+        dispatch(signAndPostTransaction(postTransactionId))
     }
 
     return (
@@ -64,7 +94,7 @@ const SmartContract = () => {
             <h1>Smart Contract</h1>
             <button onClick={sendTestMessageToFirstContact}>Send test message to first contact</button>
 
-            <h2>Step One</h2>
+            <h2>Step One - Seller</h2>
             <Box
                 component="form"
                 sx={{
@@ -103,6 +133,13 @@ const SmartContract = () => {
                     onChange={stepOneFieldChange}
                 />
                 <TextField
+                    label="NFT Token ID"
+                    name="nftTokenId"
+                    fullWidth
+                    value={stepOne.nftTokenId}
+                    onChange={stepOneFieldChange}
+                />
+                <TextField
                     label="NFT Coin ID"
                     name="nftCoinId"
                     fullWidth
@@ -110,11 +147,14 @@ const SmartContract = () => {
                     onChange={stepOneFieldChange}
                 />
             </Box>
+            <Button variant="contained" sx={{ mr: 2 }} onClick={onBuildStepOneClicked}>
+                Build Seller Transaction
+            </Button>
             <Button variant="contained" onClick={onSendStepOneClicked}>
                 Send to Maxima Contact 1
             </Button>
 
-            <h2>Step Two</h2>
+            <h2>Step Two - Buyer</h2>
             <Box
                 component="form"
                 sx={{
@@ -160,11 +200,14 @@ const SmartContract = () => {
                     onChange={stepTwoFieldChange}
                 />
             </Box>
+            <Button variant="contained" sx={{ mr: 2 }} onClick={onBuildStepTwoClicked}>
+                Build Buyer Transaction
+            </Button>
             <Button variant="contained" onClick={onSendStepTwoClicked}>
                 Send to Maxima Contact 1
             </Button>
 
-            <h2>Step Three</h2>
+            <h2>Step Three - Seller</h2>
             <Box
                 component="form"
                 sx={{
@@ -173,13 +216,17 @@ const SmartContract = () => {
                 noValidate
                 autoComplete="off"
             >
-                <TextField label="Transaction ID Name" fullWidth />
-                <TextField label="Seller Address" fullWidth />
-                <TextField label="Minima Amount" type="number" fullWidth />
-                <TextField label="Minima Token ID" defaultValue="0x00" fullWidth />
-                <TextField label="NFT Coin ID" fullWidth />
+                <TextField
+                    label="Transaction ID Name"
+                    name="txnId"
+                    fullWidth
+                    value={postTransactionId}
+                    onChange={transactionIdFieldChange}
+                />
             </Box>
-            <Button variant="contained">Send to Maxima Contact 1</Button>
+            <Button variant="contained" onClick={onSignAndPostClicked}>
+                Sign and post transaction
+            </Button>
         </>
     )
 }

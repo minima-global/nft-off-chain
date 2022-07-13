@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js'
 import { util } from '../util'
 
 const status = (): Promise<Status> => {
@@ -82,6 +83,128 @@ function sendMaximaMessageToContactById(id: number, message: string): Promise<an
     })
 }
 
+const createTransaction = (id: string) => {
+    const command = `txncreate id:${id}`
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+const createTransactionOutput = (id: string, address: string, amount: Decimal, tokenId: string) => {
+    const command = `txnoutput id:${id} address:${address} amount:${amount} tokenid:${tokenId}`
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+const createTransactionInput = (id: string, nftCoinId: string, scriptMMR: boolean) => {
+    const command = `txninput id:${id} coinid:${nftCoinId} scriptmmr:${scriptMMR}`
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+const exportTransaction = (id: string) => {
+    const command = `txnexport id:${id}`
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+const importTransaction = (data: string) => {
+    const command = `txnimport data:${data}`
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+const exportTokenId = (tokenId: string) => {
+    const command = `tokens action:export tokenid:${tokenId}`
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+const importTokenId = (data: string) => {
+    const command = `tokens action:import data:${data}`
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+const signTransaction = (id: string) => {
+    // public key: auto
+    const command = `txnsign id:${id} publickey:auto`
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+const postTransaction = (id: string) => {
+    // public key: auto
+    const command = `txnpost id:${id}`
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+// used to verify transaction
+const listTransaction = (id: string) => {}
+
 export const commands = {
     status,
     txpow_block,
@@ -89,4 +212,13 @@ export const commands = {
     txpow_address,
     getAllMyTokens,
     sendMaximaMessageToContactById,
+    createTransaction,
+    createTransactionOutput,
+    createTransactionInput,
+    exportTransaction,
+    importTransaction,
+    exportTokenId,
+    importTokenId,
+    signTransaction,
+    postTransaction,
 }
