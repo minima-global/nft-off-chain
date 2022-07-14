@@ -71,6 +71,11 @@ function postTransaction(id: string) {
     return commands.postTransaction(id)
 }
 
+async function getMyAddress() {
+    const maximaData = await commands.maxima()
+    return maximaData.contact
+}
+
 export const minima_service = {
     getAllMyNFTs,
     sendMessageToFirstContact,
@@ -86,4 +91,5 @@ export const minima_service = {
     importTokenId,
     signTransaction,
     postTransaction,
+    getMyAddress,
 }

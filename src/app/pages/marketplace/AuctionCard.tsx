@@ -7,17 +7,24 @@ import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import CardMedia from '@mui/material/CardMedia'
+import { buyAuctionItem } from './../../../state/marketplace.state'
+import { useAppDispatch } from './../../../state/hooks'
 
 interface IProps {
     auction: AuctionDB
 }
 
 const AuctionCard = ({ auction }: IProps) => {
+    const dispatch = useAppDispatch()
     const fallbackImage = 'https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg'
     let imageUrl = null // populate with image if we have one, or keep null if we don't
 
     if (auction.nftUrl) {
         imageUrl = util.hexToString(auction.nftUrl)
+    }
+
+    function onBuyItemClicked() {
+        dispatch(buyAuctionItem(auction))
     }
 
     return (
@@ -37,7 +44,9 @@ const AuctionCard = ({ auction }: IProps) => {
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button size="small">Learn More</Button>
+                <Button onClick={onBuyItemClicked} size="small">
+                    Buy
+                </Button>
             </CardActions>
         </Card>
     )

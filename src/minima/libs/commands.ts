@@ -205,6 +205,19 @@ const postTransaction = (id: string) => {
 // used to verify transaction
 const listTransaction = (id: string) => {}
 
+const maxima = (): Promise<any> => {
+    const command = `maxima`
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res: any) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
 export const commands = {
     status,
     txpow_block,
@@ -221,4 +234,5 @@ export const commands = {
     importTokenId,
     signTransaction,
     postTransaction,
+    maxima,
 }

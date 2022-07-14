@@ -9,6 +9,32 @@ const initialNotificationsState: NotificationsState = {
     notifications: [],
 }
 
+export const enqueueSuccessSnackbar =
+    (message: string): AppThunk =>
+    (dispatch, getState) => {
+        const successSnackBar = {
+            message,
+            options: {
+                key: new Date().getTime() + Math.random(),
+                variant: 'success',
+            },
+        }
+        dispatch(enqueueSnackbar(successSnackBar))
+    }
+
+export const enqueueFailureSnackbar =
+    (message: string): AppThunk =>
+    (dispatch, getState) => {
+        const failureSnackBar = {
+            message,
+            options: {
+                key: new Date().getTime() + Math.random(),
+                variant: 'success',
+            },
+        }
+        dispatch(enqueueSnackbar(failureSnackBar))
+    }
+
 export const notificationsSlice = createSlice({
     name: 'notifications',
     initialState: initialNotificationsState,

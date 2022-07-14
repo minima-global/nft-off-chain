@@ -8,6 +8,8 @@ export interface AuctionCandidate {
     nftPrice: number //TODO: convert to Decimal??
     nftSellerId: string
     detailsJson?: TokenDetails
+    sellerAddress: string
+    buyerAddress?: string
 }
 
 export interface AuctionDB extends AuctionCandidate {
