@@ -1,13 +1,7 @@
 import { useState } from 'react'
 
 import { minima_service } from '../../../minima'
-import {
-    sendStepOneData,
-    sendStepTwoData,
-    buildStepOne,
-    buildStepTwo,
-    signAndPostTransaction,
-} from './../../../state/smartcontract.state'
+import { sendStepOneData, sendStepTwoData, buildStepOne, buildStepTwo, signAndPostTransaction } from '../../../state/swapcontract.state'
 import { useAppDispatch, useAppSelector } from './../../../state/hooks'
 
 import Box from '@mui/material/Box'

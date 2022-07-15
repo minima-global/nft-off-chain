@@ -29,7 +29,7 @@ export const enqueueFailureSnackbar =
             message,
             options: {
                 key: new Date().getTime() + Math.random(),
-                variant: 'success',
+                variant: 'error',
             },
         }
         dispatch(enqueueSnackbar(failureSnackBar))

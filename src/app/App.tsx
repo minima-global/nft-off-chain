@@ -8,7 +8,7 @@ import NavigationBar from './layout/NavigationBar'
 import Container from '@mui/material/Container'
 import { events } from '../minima'
 import { useAppDispatch } from '../state/hooks'
-import { processMaximaMessage } from './../state/smartcontract.state'
+import { processMaximaMessage } from '../state/swapcontract.state'
 
 const App = () => {
     const dispatch = useAppDispatch()

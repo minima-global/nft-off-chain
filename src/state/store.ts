@@ -3,14 +3,14 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
 import marketplaceReducer from './/marketplace.state'
 import nftWalletReducer from './nftwallet.state'
 import notificationsReducer from './notifications.state'
-import smartContractReducer from './smartcontract.state'
+import swapContractReducer from './swapcontract.state'
 
 export const store = configureStore({
     reducer: {
         marketplace: marketplaceReducer,
         nftwallet: nftWalletReducer,
         notifications: notificationsReducer,
-        smartcontract: smartContractReducer,
+        swapcontract: swapContractReducer,
     },
 })
 
