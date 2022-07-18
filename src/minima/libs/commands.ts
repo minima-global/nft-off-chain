@@ -98,6 +98,7 @@ const createTransaction = (id: string) => {
 
 const createTransactionOutput = (id: string, address: string, amount: Decimal, tokenId: string) => {
     const command = `txnoutput id:${id} address:${address} amount:${amount} tokenid:${tokenId}`
+    console.log('command output: ', command)
     return new Promise((resolve, reject) => {
         MDS.cmd(command, (res) => {
             if (res.status) {
@@ -111,6 +112,7 @@ const createTransactionOutput = (id: string, address: string, amount: Decimal, t
 
 const createTransactionInput = (id: string, nftCoinId: string, scriptMMR: boolean) => {
     const command = `txninput id:${id} coinid:${nftCoinId} scriptmmr:${scriptMMR}`
+    console.log('command input: ', command)
     return new Promise((resolve, reject) => {
         MDS.cmd(command, (res) => {
             if (res.status) {
@@ -218,6 +220,89 @@ const maxima = (): Promise<any> => {
     })
 }
 
+type TokensAction = 'export' | 'import'
+const tokens = (tokenId?: string, action?: TokensAction, data?: string): Promise<any> => {
+    let tokenArg = ''
+    let actionArg = ''
+    let dataArg = ''
+    tokenId ? (tokenArg = `tokenid:${tokenId}`) : (tokenArg = '')
+    action ? (actionArg = `action:${action}`) : (actionArg = '')
+    action && action === 'import' && data ? (dataArg = `data:${data}`) : (dataArg = '')
+
+    const command = `tokens ${tokenArg} ${actionArg} ${dataArg}`
+    console.log('tokens command: ', command)
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res: any) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+const newAddress = (): Promise<any> => {
+    const command = `newaddress`
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res: any) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+type CoinsArgsTypes = {
+    relevant?: boolean
+    sendable?: boolean
+    coinId?: string
+    amount?: number
+    address?: string
+    tokenId?: string
+}
+const coins = ({ relevant, sendable, coinId, amount, address, tokenId }: CoinsArgsTypes): Promise<any[]> => {
+    const command =
+        `coins ` +
+        `${buildArg('relevant', relevant)} ` +
+        `${buildArg('sendable', sendable)} ` +
+        `${buildArg('coinId', coinId)} ` +
+        `${buildArg('amount', amount)} ` +
+        `${buildArg('address', address)} ` +
+        `${buildArg('tokenId', tokenId)}`
+
+    console.log('coins command: ', command)
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res: any) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+////////////// helpers ////////////////////////
+
+function isPropUndefined(prop: any) {
+    return prop === undefined
+}
+
+// if prop value is undefined returns an empy string ''
+// otherwise returns the name, value pair as a string
+// eg 'tokenid:0xA39FCDC0593B9FAB6E194D758B2ADC67DA7416EB01224F873C519C5A90C24AFF'
+// or 'amount:10'
+function buildArg(propName: string, propValue: any) {
+    if (isPropUndefined(propValue)) {
+        return ''
+    } else {
+        return `${propName.toLowerCase()}:${propValue.toString()}`
+    }
+}
+
 export const commands = {
     status,
     txpow_block,
@@ -235,4 +320,7 @@ export const commands = {
     signTransaction,
     postTransaction,
     maxima,
+    tokens,
+    newAddress,
+    coins,
 }

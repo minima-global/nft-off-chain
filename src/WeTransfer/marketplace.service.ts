@@ -79,7 +79,7 @@ function buyItem(auctionItem: AuctionDB, buyerAddress: string): Promise<AuctionD
 
 // keep polling the server
 // only respond with a resolved promise once a buyer has been found
-function pollServerForBuyer(id: number) {
+function pollServerForBuyer(id: number): Promise<AuctionDB> {
     return new Promise((resolve, reject) => {
         const intervalId = setInterval(() => {
             getAuctionById(id).then((res) => {

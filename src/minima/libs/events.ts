@@ -100,7 +100,7 @@ const initializeMinima = () => {
 };
 
 // Do registration
-initializeMinima();
+// initializeMinima();
 
 ///////////////////////// application registers custom callbacks ///////////////////////
 
@@ -120,8 +120,11 @@ function onNewBalance(callback: (data: NewBalanceData) => void) {
     whenNewBalance = callback;
 }
 
+
 function onInit(callback: () => void) {
-    whenInit = callback;
+    whenInit = callback
+    // Do registration
+    initializeMinima()
 }
 
 function onMinimaLog(callback: (data: MinimaLogData) => void) {

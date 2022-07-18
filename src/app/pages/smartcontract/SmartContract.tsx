@@ -87,6 +87,13 @@ const SmartContract = () => {
         <>
             <h1>Smart Contract</h1>
             <button onClick={sendTestMessageToFirstContact}>Send test message to first contact</button>
+            <button
+                onClick={() => {
+                    minima_service.getMinimaCoinId(new Decimal(0.1)).then(console.log)
+                }}
+            >
+                coin more than 0.1 minima
+            </button>
 
             <h2>Step One - Seller</h2>
             <Box
@@ -97,49 +104,12 @@ const SmartContract = () => {
                 noValidate
                 autoComplete="off"
             >
-                <TextField
-                    label="Transaction ID Name"
-                    name="txnId"
-                    fullWidth
-                    value={stepOne.txnId}
-                    onChange={stepOneFieldChange}
-                />
-                <TextField
-                    label="Seller Address"
-                    name="sellerAddress"
-                    fullWidth
-                    value={stepOne.sellerAddress}
-                    onChange={stepOneFieldChange}
-                />
-                <TextField
-                    label="Minima Amount"
-                    name="minimaAmount"
-                    type="number"
-                    fullWidth
-                    value={stepOne.minimaAmount}
-                    onChange={stepOneFieldChange}
-                />
-                <TextField
-                    label="Minima Token ID"
-                    name="minimaTokenId"
-                    fullWidth
-                    value={stepOne.minimaTokenId}
-                    onChange={stepOneFieldChange}
-                />
-                <TextField
-                    label="NFT Token ID"
-                    name="nftTokenId"
-                    fullWidth
-                    value={stepOne.nftTokenId}
-                    onChange={stepOneFieldChange}
-                />
-                <TextField
-                    label="NFT Coin ID"
-                    name="nftCoinId"
-                    fullWidth
-                    value={stepOne.nftCoinId}
-                    onChange={stepOneFieldChange}
-                />
+                <TextField label="Transaction ID Name" name="txnId" fullWidth value={stepOne.txnId} onChange={stepOneFieldChange} />
+                <TextField label="Seller Address" name="sellerAddress" fullWidth value={stepOne.sellerAddress} onChange={stepOneFieldChange} />
+                <TextField label="Minima Amount" name="minimaAmount" type="number" fullWidth value={stepOne.minimaAmount} onChange={stepOneFieldChange} />
+                <TextField label="Minima Token ID" name="minimaTokenId" fullWidth value={stepOne.minimaTokenId} onChange={stepOneFieldChange} />
+                <TextField label="NFT Token ID" name="nftTokenId" fullWidth value={stepOne.nftTokenId} onChange={stepOneFieldChange} />
+                <TextField label="NFT Coin ID" name="nftCoinId" fullWidth value={stepOne.nftCoinId} onChange={stepOneFieldChange} />
             </Box>
             <Button variant="contained" sx={{ mr: 2 }} onClick={onBuildStepOneClicked}>
                 Build Seller Transaction
@@ -157,42 +127,11 @@ const SmartContract = () => {
                 noValidate
                 autoComplete="off"
             >
-                <TextField
-                    label="Transaction ID Name"
-                    name="txnId"
-                    fullWidth
-                    value={stepTwo.txnId}
-                    onChange={stepTwoFieldChange}
-                />
-                <TextField
-                    label="Buyer Address"
-                    name="buyerAddress"
-                    fullWidth
-                    value={stepTwo.buyerAddress}
-                    onChange={stepTwoFieldChange}
-                />
-                <TextField
-                    label="NFT Amount"
-                    name="nftAmount"
-                    type="number"
-                    fullWidth
-                    value={stepTwo.nftAmount}
-                    onChange={stepTwoFieldChange}
-                />
-                <TextField
-                    label="NFT Token ID"
-                    name="nftTokenId"
-                    fullWidth
-                    value={stepTwo.nftTokenId}
-                    onChange={stepTwoFieldChange}
-                />
-                <TextField
-                    label="Minima Coin ID"
-                    name="minimaCoinId"
-                    fullWidth
-                    value={stepTwo.minimaCoinId}
-                    onChange={stepTwoFieldChange}
-                />
+                <TextField label="Transaction ID Name" name="txnId" fullWidth value={stepTwo.txnId} onChange={stepTwoFieldChange} />
+                <TextField label="Buyer Address" name="buyerAddress" fullWidth value={stepTwo.buyerAddress} onChange={stepTwoFieldChange} />
+                <TextField label="NFT Amount" name="nftAmount" type="number" fullWidth value={stepTwo.nftAmount} onChange={stepTwoFieldChange} />
+                <TextField label="NFT Token ID" name="nftTokenId" fullWidth value={stepTwo.nftTokenId} onChange={stepTwoFieldChange} />
+                <TextField label="Minima Coin ID" name="minimaCoinId" fullWidth value={stepTwo.minimaCoinId} onChange={stepTwoFieldChange} />
             </Box>
             <Button variant="contained" sx={{ mr: 2 }} onClick={onBuildStepTwoClicked}>
                 Build Buyer Transaction
@@ -210,13 +149,7 @@ const SmartContract = () => {
                 noValidate
                 autoComplete="off"
             >
-                <TextField
-                    label="Transaction ID Name"
-                    name="txnId"
-                    fullWidth
-                    value={postTransactionId}
-                    onChange={transactionIdFieldChange}
-                />
+                <TextField label="Transaction ID Name" name="txnId" fullWidth value={postTransactionId} onChange={transactionIdFieldChange} />
             </Box>
             <Button variant="contained" onClick={onSignAndPostClicked}>
                 Sign and post transaction

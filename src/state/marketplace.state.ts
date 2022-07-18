@@ -4,6 +4,7 @@ import { enqueueSuccessSnackbar, enqueueFailureSnackbar } from './notifications.
 import { marketplace_service } from '../WeTransfer/marketplace.service'
 import { AuctionDB } from '../WeTransfer/Auction'
 import { minima_service } from '../minima'
+import { generateStepOne } from './swapcontract.state'
 
 export interface MarketplaceState {
     auctions: AuctionDB[]
@@ -29,7 +30,7 @@ export const fetchAllAuctions = (): AppThunk => async (dispatch, getState) => {
 export const createAuction =
     (nft: any): AppThunk =>
     async (dispatch, getState) => {
-        const contact = await minima_service.getMyAddress()
+        const contact = await minima_service.getMyMaximaAddress()
 
         return marketplace_service.listNFTForAuction(nft, 20, 'some-user-id', contact).then(
             (res: AuctionDB) => {
@@ -46,7 +47,7 @@ export const createAuction =
 export const buyAuctionItem =
     (auctionItem: AuctionDB): AppThunk =>
     async (dispatch, getState) => {
-        const contact = await minima_service.getMyAddress()
+        const contact = await minima_service.getMyMaximaAddress()
         const res = await marketplace_service.buyItem(auctionItem, contact)
         console.log('item bought', res)
         // server should now inform the seller you have bought the item
@@ -59,6 +60,7 @@ export const pollServerForBuyer =
     async (dispatch, getState) => {
         const boughtAuction = await marketplace_service.pollServerForBuyer(auctionItem.id)
         console.log('bought auction, kick of transfer process', boughtAuction)
+        dispatch(generateStepOne(boughtAuction))
     }
 
 export const marketplaceSlice = createSlice({

@@ -6,6 +6,7 @@ import { StepOne } from '../smart-contract/StepOne'
 import { StepTwo } from '../smart-contract/StepTwo'
 import { Transaction } from '../smart-contract/Transaction'
 import { AuctionDB } from '../WeTransfer/Auction'
+import Decimal from 'decimal.js'
 
 export interface SmartContractState {
     transactions: Record<string, Transaction>
@@ -41,15 +42,15 @@ export const processMaximaMessage =
 
 ///////////////////////////////////////////////////// step one stuff //////////////////////////////////////////////////////
 
-// Use th data from the sold auction item,
+// Use the data from the sold auction item,
 // to create step one of the smart contract.
 export const generateStepOne =
     (boughtAuction: AuctionDB): AppThunk =>
     async (dispatch, getState) => {
         const step = 1
-        const txnId = boughtAuction.nftTokenId + Date.now()
-        const sellerAddress = await minima_service.getMyAddress()
-        const minimaAmount = boughtAuction.nftPrice
+        const txnId = `${boughtAuction.nftTokenId}-${Date.now()}`
+        const sellerAddress = await minima_service.getMyWalletAddress()
+        const minimaAmount = new Decimal(boughtAuction.nftPrice)
         const minimaTokenId = '0x00'
         const nftCoinId = await minima_service.getCoinIdFromTokenId(boughtAuction.nftTokenId)
         const nftTokenId = boughtAuction.nftTokenId
@@ -57,6 +58,19 @@ export const generateStepOne =
         const txnData = '' // leave empty, will fill in in the build step
 
         // create step one object and dispatch builStepOne with it
+        const stepOne: StepOne = {
+            step,
+            txnId,
+            sellerAddress,
+            minimaAmount,
+            minimaTokenId,
+            nftCoinId,
+            nftTokenId,
+            nftTokenIdData,
+            txnData,
+        }
+        dispatch(enqueueSuccessSnackbar('Step One generated from sold auction'))
+        dispatch(buildStepOne(stepOne))
     }
 
 // turn step one into inputs and outputs
@@ -132,9 +146,42 @@ export const receiveStepOneData =
         // verify data
 
         // use it to create step two
+        dispatch(generateStepTwo(stepOneData))
     }
 
 ///////////////////////////////////////////////////// step two stuff //////////////////////////////////////////////////////
+
+// Use the data from step one,
+// to create step two of the smart contract.
+export const generateStepTwo =
+    (stepOneData: StepOne): AppThunk =>
+    async (dispatch, getState) => {
+        const step = 2
+        const txnId = stepOneData.txnId
+        const buyerAddress = await minima_service.getMyWalletAddress()
+        const nftAmount = 1
+        const nftTokenId = stepOneData.nftTokenId
+        const minimaCoinId = await minima_service.getMinimaCoinId(stepOneData.minimaAmount).then(
+            (x) => x, // do nothing pass through
+            (err) => {
+                dispatch(enqueueFailureSnackbar(err.toString()))
+            }
+        )
+        const txnData = '' // leave empty, will fill in in the build step
+
+        // create step one object and dispatch builStepOne with it
+        const stepTwo: StepTwo = {
+            step,
+            txnId,
+            buyerAddress,
+            nftAmount,
+            nftTokenId,
+            minimaCoinId,
+            txnData,
+        }
+        dispatch(enqueueSuccessSnackbar('Step Two generated from step one data'))
+        dispatch(buildStepTwo(stepTwo))
+    }
 
 // turn step two into inputs and outputs
 // and export transacton

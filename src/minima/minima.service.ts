@@ -71,9 +71,45 @@ function postTransaction(id: string) {
     return commands.postTransaction(id)
 }
 
-async function getMyAddress() {
+async function getMyMaximaAddress() {
     const maximaData = await commands.maxima()
     return maximaData.contact
+}
+
+async function getMyWalletAddress() {
+    const addressData = await commands.newAddress()
+    return addressData.address
+}
+
+function getCoinIdFromTokenId(tokenId: string) {
+    return commands.tokens(tokenId).then((token) => token.coinid)
+}
+
+// gets the smallest coin which satisfies the amount
+// TODO: only looks at a single coin. It is not able to combine multiple coins together from your wallet
+// In fact the smart contract itself can only handle a single coin at a time
+async function getMinimaCoinId(minimaAmount: Decimal) {
+    const coins = await commands.coins({ tokenId: '0x00' })
+
+    const sortedCoins = coins
+        .filter((coin) => {
+            const amount = new Decimal(coin.amount)
+            return amount.gte(minimaAmount)
+        })
+        .sort((c1, c2) => {
+            // smallest to largest
+            const val1 = new Decimal(c1.amount)
+            const val2 = new Decimal(c2.amount)
+            return val1.comparedTo(val2)
+        })
+    console.log('sorted filtered coins', sortedCoins)
+
+    let myCoin = sortedCoins[0]
+    console.log('myCoin', myCoin)
+    if (myCoin === undefined) {
+        throw new Error('You do not have sufficient minima')
+    }
+    return myCoin.coinid
 }
 
 export const minima_service = {
@@ -91,5 +127,8 @@ export const minima_service = {
     importTokenId,
     signTransaction,
     postTransaction,
-    getMyAddress,
+    getMyMaximaAddress,
+    getMyWalletAddress,
+    getCoinIdFromTokenId,
+    getMinimaCoinId,
 }

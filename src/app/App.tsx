@@ -9,6 +9,7 @@ import Container from '@mui/material/Container'
 import { events } from '../minima'
 import { useAppDispatch } from '../state/hooks'
 import { processMaximaMessage } from '../state/swapcontract.state'
+import Decimal from 'decimal.js'
 
 const App = () => {
     const dispatch = useAppDispatch()
@@ -19,7 +20,14 @@ const App = () => {
         events.onMaxima((maximaMessage) => {
             dispatch(processMaximaMessage(maximaMessage))
         })
+
+        events.onInit(() => {
+            console.log('****************** app init ***********************')
+        })
     }, [])
+
+    // Decimal.js is used to handle floating point numbers
+    Decimal.set({ precision: 50 })
 
     return (
         <ThemeProvider theme={theme}>
