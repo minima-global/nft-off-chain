@@ -30,6 +30,7 @@ const SmartContract = () => {
         buyerAddress: '',
         nftAmount: 1,
         nftTokenId: '',
+        minimaAmount: new Decimal(1),
         minimaCoinId: '',
         txnData: '',
     }

@@ -33,7 +33,7 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "build-zip": "npm run build && rm nft_* && date=$(date +%Y_%m_%d_%H%M) && cd build && zip -r nft_${date}.zip . && mv nft_${date}.zip ../",
-        "build-reload": "npm run build && rm nft_* && date=$(date +%Y_%m_%d_%H%M) && cd build && zip -r nft_${date}.zip . && mv nft_${date}.zip ../ && cd .. && node app-reload-login.js nft_${date}.zip",
+        "build-reload": "npm run build && rm nft_* && date=$(date +%Y_%m_%d_%H%M) && cd build && zip -r nft_${date}.zip . && mv nft_${date}.zip ../ && cd .. && node app-reload-login.js nft_${date}.zip 9002 && node app-reload-login.js nft_${date}.zip 10002",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },

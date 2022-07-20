@@ -103,6 +103,7 @@ export const buildStepOne =
             stepOne.txnData = transactionExportData
             dispatch(enqueueSuccessSnackbar('Seller Transaction Exported'))
             dispatch(smartContractActions.addStepOneData(stepOne))
+            dispatch(sendStepOneData(stepOne))
         } catch (err: any) {
             const message = 'Transaction Failure, ' + err.error
             dispatch(enqueueFailureSnackbar(message))
@@ -161,6 +162,7 @@ export const generateStepTwo =
         const buyerAddress = await minima_service.getMyWalletAddress()
         const nftAmount = 1
         const nftTokenId = stepOneData.nftTokenId
+        const minimaAmount = stepOneData.minimaAmount
         const minimaCoinId = await minima_service.getMinimaCoinId(stepOneData.minimaAmount).then(
             (x) => x, // do nothing pass through
             (err) => {
@@ -169,13 +171,14 @@ export const generateStepTwo =
         )
         const txnData = '' // leave empty, will fill in in the build step
 
-        // create step one object and dispatch builStepOne with it
+        // create step one object and dispatch buildStepOne with it
         const stepTwo: StepTwo = {
             step,
             txnId,
             buyerAddress,
             nftAmount,
             nftTokenId,
+            minimaAmount,
             minimaCoinId,
             txnData,
         }
@@ -209,7 +212,7 @@ export const buildStepTwo =
             await minima_service.createBuyerOutput(stepTwo.txnId, stepTwo.buyerAddress, stepTwo.nftTokenId)
             dispatch(enqueueSuccessSnackbar('Buyer Output Created'))
 
-            await minima_service.createBuyerInput(stepTwo.txnId, stepTwo.minimaCoinId)
+            await minima_service.createBuyerInput(stepTwo.txnId, stepTwo.minimaCoinId, stepTwo.minimaAmount, stepTwo.buyerAddress)
             dispatch(enqueueSuccessSnackbar('Buyer Input Created'))
 
             const data = await minima_service.signTransaction(stepTwo.txnId)
@@ -223,6 +226,7 @@ export const buildStepTwo =
             stepTwo.txnData = exportData
             dispatch(enqueueSuccessSnackbar('Buyer Transaction Exported'))
             dispatch(smartContractActions.addStepTwoData(stepTwo))
+            dispatch(sendStepTwoData(stepTwo))
         } catch (err: any) {
             const message = 'Transaction Failure, ' + err.error
             dispatch(enqueueFailureSnackbar(message))
@@ -241,7 +245,7 @@ export const sendStepTwoData =
             return
         }
 
-        minima_service.sendMessageToFirstContact(stepTwoData).then(
+        minima_service.sendMessageToFirstContact(storedStepTwoData).then(
             (maxRes) => {
                 console.log('Maxima response:', maxRes)
                 dispatch(enqueueSuccessSnackbar('Step Two Data Sent'))
@@ -267,6 +271,7 @@ export const receiveStepTwoData =
         // verify data
 
         // use it to create step three
+        dispatch(signAndPostTransaction(stepTwoData.txnId))
     }
 
 export const signAndPostTransaction =

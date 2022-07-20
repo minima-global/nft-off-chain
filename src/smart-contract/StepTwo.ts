@@ -1,3 +1,5 @@
+import Decimal from 'decimal.js'
+
 export interface StepTwo {
     step: number
 
@@ -8,6 +10,7 @@ export interface StepTwo {
     buyerAddress: string
     nftAmount: number // will only be 1
     nftTokenId: string
+    minimaAmount: Decimal
 
     // for inputs
     minimaCoinId: string

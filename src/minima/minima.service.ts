@@ -39,12 +39,30 @@ function createSellerInput(id: string, nftCoinId: string) {
     return commands.createTransactionInput(id, nftCoinId, true)
 }
 
+// nft output
 function createBuyerOutput(id: string, buyerAddress: string, nftTokenId: string) {
     return commands.createTransactionOutput(id, buyerAddress, new Decimal(1), nftTokenId)
 }
 
-function createBuyerInput(id: string, minimaCoinId: string) {
-    return commands.createTransactionInput(id, minimaCoinId, true)
+// creates buyer minima amount input
+// also creates the output for the change returned
+function createBuyerInput(id: string, minimaCoinId: string, minimaAmount: Decimal, returnAddress: string) {
+    return commands
+        .createTransactionInput(id, minimaCoinId, true)
+        .then(() => {
+            return commands.coins({ coinId: minimaCoinId })
+        })
+        .then((coinUsedToPay: any) => {
+            console.log('coinUsedToPay', coinUsedToPay)
+            const myCoin = coinUsedToPay[0]
+            const myCoinValue = new Decimal(myCoin.amount)
+            const changeAmount = myCoinValue.minus(minimaAmount)
+            if (changeAmount.isZero()) {
+                // do nothing
+            } else {
+                return commands.createTransactionOutput(id, returnAddress, changeAmount, '0x00')
+            }
+        })
 }
 
 function exportTransaction(id: string) {

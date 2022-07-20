@@ -4,18 +4,33 @@ const https = require('https')
 const xpath = require('xpath')
 const DOMParser = require('xmldom').DOMParser
 
-const minimaRpcUrl = 'http://127.0.0.1:9002'
+
+/////////////// zip file name as command line agrs //////////////
 
 console.log(process.argv)
-
 if (process.argv.length < 3) {
     throw 'missing new minidapp filename'
 }
-
 const newZipFileName = process.argv[2]
 const newZipFilePath = __dirname + '/' + newZipFileName
-
 console.log('loading zip from ' + newZipFilePath)
+
+
+////////////////// minima rpc port as command line args /////////////
+
+// default rpc port is 9002
+if (process.argv.length < 4) {
+    throw 'missing RPC port number'
+}
+const rpcPort = process.argv[3]
+const minimaRpcUrl = `http://127.0.0.1:${rpcPort}`
+const mdsPort = (parseInt(rpcPort) + 1).toString()
+const mdsUrl = `https://127.0.0.1:${mdsPort}`
+console.log('minimaRpcUrl', minimaRpcUrl)
+console.log('mdsUrl', mdsUrl)
+
+
+//////////////// functions /////////////////////
 
 const callMinimaCommand = (command) => {
     console.log('running command ' + command)
@@ -77,7 +92,7 @@ const uninstallAllNftInstances = () => {
 }
 
 const getMiniHubHTML = (password) => {
-    const url = 'https://127.0.0.1:9003/login.html'
+    const url = mdsUrl + '/login.html'
     const httpsAgent = new https.Agent({ rejectUnauthorized: false })
 
     const request = {
@@ -102,8 +117,25 @@ const extractLastInstalledMinidappUrl = (miniHubHTML) => {
 
     console.log('minidappHref', minidappHref)
     // take off first dot and add to https://127.0.0.1:9003
-    const fullUrl = 'https://127.0.0.1:9003' + minidappHref.substring(1)
+    const fullUrl = mdsUrl + minidappHref.substring(1)
     return fullUrl
+}
+
+const extractAllInstalledMinidappUrls = (miniHubHTML) => {
+    console.log('miniHubHTML', miniHubHTML)
+    const miniHubDoc = new DOMParser().parseFromString(miniHubHTML)
+
+    // gets an array of hrefs from all installed minidapps
+    const xPathString = '//ul//li//a/@href'
+
+    var minidappHrefs = xpath.select(xPathString, miniHubDoc)
+    allMinidapUrls = minidappHrefs.map((href) => {
+        // take off first dot and add to https://127.0.0.1:9003
+        return mdsUrl + href.nodeValue.substring(1)
+    })
+    console.log('allMinidapUrls', allMinidapUrls)
+
+    return allMinidapUrls
 }
 
 const openMinidappInChrome = (minidappFullUrl) => {
@@ -121,9 +153,13 @@ const openMinidappInChrome = (minidappFullUrl) => {
     })
 }
 
+//////////////// main /////////////////////
+
 uninstallAllNftInstances()
     .then(installMinidapp(newZipFilePath))
     .then(getMinidappPassword)
     .then(getMiniHubHTML)
-    .then(extractLastInstalledMinidappUrl)
-    .then(openMinidappInChrome)
+    .then(extractAllInstalledMinidappUrls)
+    .then((urlsArray) => {
+        urlsArray.forEach(openMinidappInChrome)
+    })
