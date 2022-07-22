@@ -138,7 +138,7 @@ export const sendStepOneData =
 export const receiveStepOneData =
     (stepOneData: StepOne): AppThunk =>
     (dispatch, getState) => {
-        const message = 'Step one data recieved, creating step two: ' + JSON.stringify(stepOneData)
+        const message = 'Step one data recieved, creating step two: ' + JSON.stringify(stepOneData, null, '\t')
         dispatch(enqueueSuccessSnackbar(message))
         dispatch(smartContractActions.addStepOneData(stepOneData))
 
@@ -264,7 +264,7 @@ export const sendStepTwoData =
 export const receiveStepTwoData =
     (stepTwoData: StepTwo): AppThunk =>
     (dispatch, getState) => {
-        const message = 'Step two data recieved, posting transaction: ' + JSON.stringify(stepTwoData)
+        const message = 'Step two data recieved, posting transaction: ' + JSON.stringify(stepTwoData, null, '\t')
         dispatch(enqueueSuccessSnackbar(message))
         dispatch(smartContractActions.addStepTwoData(stepTwoData))
 

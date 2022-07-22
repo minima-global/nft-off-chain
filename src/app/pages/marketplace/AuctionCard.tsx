@@ -7,7 +7,7 @@ import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import CardMedia from '@mui/material/CardMedia'
-import { buyAuctionItem } from './../../../state/marketplace.state'
+import { buyAuctionItem, deleteAuction } from './../../../state/marketplace.state'
 import { useAppDispatch } from './../../../state/hooks'
 
 interface IProps {
@@ -27,25 +27,29 @@ const AuctionCard = ({ auction }: IProps) => {
         dispatch(buyAuctionItem(auction))
     }
 
+    function onDeleteItemClicked() {
+        dispatch(deleteAuction(auction.id))
+    }
+
     return (
         <Card sx={{ minWidth: 275 }}>
-            {imageUrl ? (
-                <CardMedia component="img" height="194" image={imageUrl} />
-            ) : (
-                <CardMedia component="img" height="194" image={fallbackImage} />
-            )}
+            {imageUrl ? <CardMedia component="img" height="194" image={imageUrl} /> : <CardMedia component="img" height="194" image={fallbackImage} />}
 
             <CardContent>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                <Typography variant="h5" component="div">
                     {auction.nftName}
                 </Typography>
-                <Typography variant="h5" component="div">
-                    {auction.nftTokenId}
+                <Typography variant="h6" component="div" gutterBottom>
+                    {auction.nftPrice} minima
                 </Typography>
+                <Typography sx={{ fontSize: 14 }}>{auction.nftTokenId}</Typography>
             </CardContent>
             <CardActions>
                 <Button onClick={onBuyItemClicked} size="small">
                     Buy
+                </Button>
+                <Button onClick={onDeleteItemClicked} size="small">
+                    Delete
                 </Button>
             </CardActions>
         </Card>

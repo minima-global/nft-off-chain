@@ -84,6 +84,10 @@ const SmartContract = () => {
         dispatch(signAndPostTransaction(postTransactionId))
     }
 
+    const testSql = () => {
+        minima_service.createAndInsertTable()
+    }
+
     return (
         <>
             <h1>Smart Contract</h1>
@@ -95,6 +99,7 @@ const SmartContract = () => {
             >
                 coin more than 0.1 minima
             </button>
+            <button onClick={testSql}>test sql</button>
 
             <h2>Step One - Seller</h2>
             <Box

@@ -5,6 +5,7 @@ import { marketplace_service } from '../WeTransfer/marketplace.service'
 import { AuctionDB } from '../WeTransfer/Auction'
 import { minima_service } from '../minima'
 import { generateStepOne } from './swapcontract.state'
+import Decimal from 'decimal.js'
 
 export interface MarketplaceState {
     auctions: AuctionDB[]
@@ -28,17 +29,36 @@ export const fetchAllAuctions = (): AppThunk => async (dispatch, getState) => {
 }
 
 export const createAuction =
-    (nft: any): AppThunk =>
+    (nft: any, price: Decimal): AppThunk =>
     async (dispatch, getState) => {
         const contact = await minima_service.getMyMaximaAddress()
 
-        return marketplace_service.listNFTForAuction(nft, 20, 'some-user-id', contact).then(
+        return marketplace_service.listNFTForAuction(nft, price, 'some-user-id', contact).then(
             (res: AuctionDB) => {
                 dispatch(enqueueSuccessSnackbar('Auction Created'))
-                dispatch(pollServerForBuyer(res))
+                dispatch(pollServerForBuyer(res.id))
+                minima_service.storeMyAuctionId(res.id)
             },
             (err) => {
                 const message = 'Auction Creation Failure, ' + JSON.stringify(err)
+                dispatch(enqueueFailureSnackbar(message))
+            }
+        )
+    }
+
+// delete auction from WeTransfer server
+// also delete auction from list of auction we are polling
+export const deleteAuction =
+    (id: number): AppThunk =>
+    async (dispatch, getState) => {
+        minima_service.removeMyAuctionId(id)
+        return marketplace_service.removeNFTFromAuctionList(id).then(
+            () => {
+                dispatch(enqueueSuccessSnackbar(`Auction ${id} Deleted`))
+                dispatch(fetchAllAuctions())
+            },
+            (err) => {
+                const message = 'Auction Delete Failure, ' + JSON.stringify(err)
                 dispatch(enqueueFailureSnackbar(message))
             }
         )
@@ -55,14 +75,28 @@ export const buyAuctionItem =
         // so you can verify the item is correct
     }
 
+// TODO: switch for websockets
+// https://stackoverflow.com/questions/59870074/websocket-send-to-specific-user-nodejs
+// https://medium.com/voodoo-engineering/websockets-on-production-with-node-js-bdc82d07bb9f
+// https://stackoverflow.com/questions/16280747/sending-message-to-a-specific-connected-users-using-websocket
 export const pollServerForBuyer =
-    (auctionItem: AuctionDB): AppThunk =>
+    (auctionItemId: number): AppThunk =>
     async (dispatch, getState) => {
-        const boughtAuction = await marketplace_service.pollServerForBuyer(auctionItem.id)
+        const boughtAuction = await marketplace_service.pollServerForBuyer(auctionItemId)
         console.log('bought auction, kick of transfer process', boughtAuction)
+        dispatch(deleteAuction(auctionItemId))
         dispatch(generateStepOne(boughtAuction))
     }
 
+export const pollMyOpenAuctions = (): AppThunk => async (dispatch, getState) => {
+    const auctionIds = minima_service.getMyAuctionIds()
+    dispatch(enqueueSuccessSnackbar('Waiting for buyer on live auctions ' + auctionIds.join()))
+    auctionIds.forEach((auctionId: number) => {
+        dispatch(pollServerForBuyer(auctionId))
+    })
+}
+
+////////////////// reducers //////////////////
 export const marketplaceSlice = createSlice({
     name: 'marketplace',
     initialState: initialMarketplaceState,

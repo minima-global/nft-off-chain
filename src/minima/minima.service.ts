@@ -2,6 +2,7 @@ import Decimal from 'decimal.js'
 import { StepOne } from '../smart-contract/StepOne'
 import { StepTwo } from '../smart-contract/StepTwo'
 import { commands } from './libs/commands'
+import { sql } from './libs/sql'
 
 const getAllMyNFTs = () => {
     return commands.getAllMyTokens().then((allTokens) => {
@@ -116,8 +117,8 @@ async function getMinimaCoinId(minimaAmount: Decimal) {
         })
         .sort((c1, c2) => {
             // smallest to largest
-            const val1 = new Decimal(c1.amount)
-            const val2 = new Decimal(c2.amount)
+            const val1: Decimal = new Decimal(c1.amount)
+            const val2: Decimal = new Decimal(c2.amount)
             return val1.comparedTo(val2)
         })
     console.log('sorted filtered coins', sortedCoins)
@@ -128,6 +129,55 @@ async function getMinimaCoinId(minimaAmount: Decimal) {
         throw new Error('You do not have sufficient minima')
     }
     return myCoin.coinid
+}
+
+function createAndInsertTable() {
+    return sql
+        .executeQuery('create table if not exists test (id int auto_increment primary key, col1 varchar(255))')
+        .then(() => {
+            return sql.executeQuery("insert into test(col1) values ('testval1')")
+        })
+        .then(() => {
+            return sql.executeQuery('select * from test')
+        })
+}
+
+// persist auction ids so we can keep polling for a buyer after reloading the app
+function storeMyAuctionId(auctionId: number) {
+    const propName = 'myAuctionIds'
+    const auctionIdString = localStorage.getItem(propName)
+    if (auctionIdString === null) {
+        localStorage.setItem(propName, JSON.stringify([auctionId]))
+    } else {
+        const auctionIds = JSON.parse(auctionIdString)
+        auctionIds.push(auctionId)
+        localStorage.setItem(propName, JSON.stringify(auctionIds))
+    }
+}
+
+// remove the persisted id so we can stop polling it
+function removeMyAuctionId(auctionId: number) {
+    const propName = 'myAuctionIds'
+    const auctionIdString = localStorage.getItem(propName)
+    if (auctionIdString === null) {
+        console.error('no auction ids stored yet')
+    } else {
+        const auctionIds = JSON.parse(auctionIdString)
+        const removed = auctionIds.filter((id: number) => id !== auctionId)
+        auctionIds.push(auctionId)
+        localStorage.setItem(propName, JSON.stringify(removed))
+    }
+}
+
+function getMyAuctionIds() {
+    const propName = 'myAuctionIds'
+    const auctionIdString = localStorage.getItem(propName)
+    if (auctionIdString === null) {
+        return []
+    } else {
+        const auctionIds = JSON.parse(auctionIdString)
+        return auctionIds
+    }
 }
 
 export const minima_service = {
@@ -149,4 +199,8 @@ export const minima_service = {
     getMyWalletAddress,
     getCoinIdFromTokenId,
     getMinimaCoinId,
+    createAndInsertTable,
+    storeMyAuctionId,
+    removeMyAuctionId,
+    getMyAuctionIds,
 }

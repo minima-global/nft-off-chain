@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js'
 import { TokenDetails } from './TokenDetails'
 
 export interface AuctionCandidate {
@@ -5,7 +6,7 @@ export interface AuctionCandidate {
     nftDescription: string
     nftUrl: string
     nftTokenId: string
-    nftPrice: number //TODO: convert to Decimal??
+    nftPrice: Decimal
     nftSellerId: string
     detailsJson?: TokenDetails
     sellerAddress: string
