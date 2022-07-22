@@ -50,12 +50,12 @@ const SmartContract = () => {
 
     const onBuildStepOneClicked = () => {
         console.log('onBuildStepOneClicked', stepOne)
-        dispatch(buildStepOne(stepOne))
+        // dispatch(buildStepOne(stepOne))
     }
 
     const onSendStepOneClicked = () => {
         console.log('onSendStepOneClicked', stepOne)
-        dispatch(sendStepOneData(stepOne))
+        // dispatch(sendStepOneData(stepOne))
     }
 
     const stepTwoFieldChange = (event: any) => {

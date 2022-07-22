@@ -3,6 +3,7 @@ import { StepOne } from '../smart-contract/StepOne'
 import { StepTwo } from '../smart-contract/StepTwo'
 import { commands } from './libs/commands'
 import { sql } from './libs/sql'
+import { util } from './util'
 
 const getAllMyNFTs = () => {
     return commands.getAllMyTokens().then((allTokens) => {
@@ -18,13 +19,24 @@ function isCoinNFTAndSendable(coin: any) {
     return typeof coin.token === 'object' && coin.token.nft && parseInt(coin.sendable) > 0
 }
 
+function sendMaximaMessageToContactById(id: number, message: string): Promise<any> {
+    const hexMessage = util.stringToHex(message)
+    return commands.maxima({ action: 'send', id, data: hexMessage, application: 'nft-off-chain' })
+}
+
 const sendMessageToFirstContact = (smartContractStep: StepOne | StepTwo) => {
     const message = JSON.stringify(smartContractStep)
-    return commands.sendMaximaMessageToContactById(1, message)
+    return sendMaximaMessageToContactById(1, message)
+}
+
+const sendMessageToMaximAddress = (smartContractStep: StepOne | StepTwo, maximaAddress: string) => {
+    const message = JSON.stringify(smartContractStep)
+    const hexMessage = util.stringToHex(message)
+    return commands.maxima({ action: 'send', to: maximaAddress, data: hexMessage, application: 'nft-off-chain' })
 }
 
 const sendTestMessageToFirstContact = (message: string) => {
-    return commands.sendMaximaMessageToContactById(1, message)
+    return sendMaximaMessageToContactById(1, message)
 }
 
 function createTransaction(id: string) {
@@ -184,6 +196,7 @@ export const minima_service = {
     getAllMyNFTs,
     sendMessageToFirstContact,
     sendTestMessageToFirstContact,
+    sendMessageToMaximAddress,
     createTransaction,
     createSellerOutput,
     createSellerInput,

@@ -70,14 +70,18 @@ export const generateStepOne =
             txnData,
         }
         dispatch(enqueueSuccessSnackbar('Step One generated from sold auction'))
-        dispatch(buildStepOne(stepOne))
+        if (boughtAuction.buyerAddress === undefined) {
+            dispatch(enqueueFailureSnackbar('No buyer address'))
+        } else {
+            dispatch(buildStepOne(stepOne, boughtAuction.buyerAddress))
+        }
     }
 
 // turn step one into inputs and outputs
 // and exports transacton
 // store the step one in state
 export const buildStepOne =
-    (stepOne: StepOne): AppThunk =>
+    (stepOne: StepOne, buyerAddress: string): AppThunk =>
     async (dispatch, getState) => {
         try {
             await minima_service.createTransaction(stepOne.txnId)
@@ -103,7 +107,7 @@ export const buildStepOne =
             stepOne.txnData = transactionExportData
             dispatch(enqueueSuccessSnackbar('Seller Transaction Exported'))
             dispatch(smartContractActions.addStepOneData(stepOne))
-            dispatch(sendStepOneData(stepOne))
+            dispatch(sendStepOneData(stepOne, buyerAddress))
         } catch (err: any) {
             const message = 'Transaction Failure, ' + err.error
             dispatch(enqueueFailureSnackbar(message))
@@ -112,7 +116,7 @@ export const buildStepOne =
 
 // create action to get step one data and send via maxima
 export const sendStepOneData =
-    (stepOneData: StepOne): AppThunk =>
+    (stepOneData: StepOne, buyerAddress: string): AppThunk =>
     (dispatch, getState) => {
         // stepOneData in state has the exported transaction data, and exported token id data
         const id = stepOneData.txnId
@@ -122,7 +126,7 @@ export const sendStepOneData =
             return
         }
 
-        minima_service.sendMessageToFirstContact(storedStepOneData).then(
+        minima_service.sendMessageToMaximAddress(storedStepOneData, buyerAddress).then(
             (maxRes) => {
                 console.log('Maxima response:', maxRes)
                 dispatch(enqueueSuccessSnackbar('Step One Data Sent'))

@@ -69,20 +69,6 @@ function getAllMyTokens(): Promise<Token[]> {
     })
 }
 
-function sendMaximaMessageToContactById(id: number, message: string): Promise<any> {
-    const hexMessage = util.stringToHex(message)
-    const command = `maxima action:send id:${id} data:${hexMessage} application:nft-off-chain`
-    return new Promise((resolve, reject) => {
-        MDS.cmd(command, (res) => {
-            if (res.status) {
-                resolve(res.response)
-            } else {
-                reject(res)
-            }
-        })
-    })
-}
-
 const createTransaction = (id: string) => {
     const command = `txncreate id:${id}`
     return new Promise((resolve, reject) => {
@@ -204,21 +190,18 @@ const postTransaction = (id: string) => {
     })
 }
 
-// used to verify transaction
-const listTransaction = (id: string) => {}
-
-const maxima = (): Promise<any> => {
-    const command = `maxima`
-    return new Promise((resolve, reject) => {
-        MDS.cmd(command, (res: any) => {
-            if (res.status) {
-                resolve(res.response)
-            } else {
-                reject(res)
-            }
-        })
-    })
-}
+// const maxima = (): Promise<any> => {
+//     const command = `maxima`
+//     return new Promise((resolve, reject) => {
+//         MDS.cmd(command, (res: any) => {
+//             if (res.status) {
+//                 resolve(res.response)
+//             } else {
+//                 reject(res)
+//             }
+//         })
+//     })
+// }
 
 type TokensAction = 'export' | 'import'
 const tokens = (tokenId?: string, action?: TokensAction, data?: string): Promise<any> => {
@@ -263,7 +246,7 @@ type CoinsArgsTypes = {
     address?: string
     tokenId?: string
 }
-const coins = ({ relevant, sendable, coinId, amount, address, tokenId }: CoinsArgsTypes): Promise<any[]> => {
+const coins = ({ relevant, sendable, coinId, amount, address, tokenId }: CoinsArgsTypes = {}): Promise<any[]> => {
     const command =
         `coins ` +
         `${buildArg('relevant', relevant)} ` +
@@ -285,23 +268,55 @@ const coins = ({ relevant, sendable, coinId, amount, address, tokenId }: CoinsAr
     })
 }
 
-////////////// helpers ////////////////////////
-
-function isPropUndefined(prop: any) {
-    return prop === undefined
+type MaximaArgsTypes = {
+    action?: 'info' | 'setname' | 'hosts' | 'send' | 'refresh'
+    name?: string
+    id?: number
+    to?: string
+    publickey?: string
+    application?: string
+    data?: string
+    logs?: boolean
 }
+const maxima = ({ action, name, id, to, publickey, application, data, logs }: MaximaArgsTypes = {}): Promise<any> => {
+    const command =
+        `maxima ` +
+        `${buildArg('action', action)} ` +
+        `${buildArg('name', name)} ` +
+        `${buildArg('id', id)} ` +
+        `${buildArg('to', to)} ` +
+        `${buildArg('publickey', publickey)} ` +
+        `${buildArg('application', application)} ` +
+        `${buildArg('data', data)} ` +
+        `${buildArg('logs', logs)}`
+
+    console.log('maxima command: ', command)
+    return new Promise((resolve, reject) => {
+        MDS.cmd(command, (res: any) => {
+            if (res.status) {
+                resolve(res.response)
+            } else {
+                reject(res)
+            }
+        })
+    })
+}
+
+////////////// helpers ////////////////////////
 
 // if prop value is undefined returns an empy string ''
 // otherwise returns the name, value pair as a string
 // eg 'tokenid:0xA39FCDC0593B9FAB6E194D758B2ADC67DA7416EB01224F873C519C5A90C24AFF'
 // or 'amount:10'
 function buildArg(propName: string, propValue: any) {
-    if (isPropUndefined(propValue)) {
+    if (propValue === undefined) {
         return ''
     } else {
         return `${propName.toLowerCase()}:${propValue.toString()}`
     }
 }
+
+///////////// api ////////////////////
 
 export const commands = {
     status,
@@ -309,7 +324,6 @@ export const commands = {
     txpow_txpowid,
     txpow_address,
     getAllMyTokens,
-    sendMaximaMessageToContactById,
     createTransaction,
     createTransactionOutput,
     createTransactionInput,

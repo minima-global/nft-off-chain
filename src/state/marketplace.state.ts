@@ -75,14 +75,17 @@ export const buyAuctionItem =
         // so you can verify the item is correct
     }
 
-// TODO: switch for websockets
+// TODO: switch for websockets or server sent events
 // https://stackoverflow.com/questions/59870074/websocket-send-to-specific-user-nodejs
 // https://medium.com/voodoo-engineering/websockets-on-production-with-node-js-bdc82d07bb9f
 // https://stackoverflow.com/questions/16280747/sending-message-to-a-specific-connected-users-using-websocket
+// https://masteringjs.io/tutorials/express/server-sent-events#:~:text=Server%2Dsent%20events%20are%20a,URLs%20or%20additional%20npm%20modules.
+// https://javascript.info/server-sent-events
 export const pollServerForBuyer =
     (auctionItemId: number): AppThunk =>
     async (dispatch, getState) => {
-        const boughtAuction = await marketplace_service.pollServerForBuyer(auctionItemId)
+        const boughtAuction: AuctionDB = await marketplace_service.pollServerForBuyer(auctionItemId)
+        // This is the very first line of code where the seller hears there is a buyer for the auction item
         console.log('bought auction, kick of transfer process', boughtAuction)
         dispatch(deleteAuction(auctionItemId))
         dispatch(generateStepOne(boughtAuction))
