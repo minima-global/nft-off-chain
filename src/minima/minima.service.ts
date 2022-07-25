@@ -109,18 +109,30 @@ async function getMyMaximaAddress() {
 
 async function getMyWalletAddress() {
     const addressData = await commands.newAddress()
+    console.log('getMyWalletAddress ', addressData.address)
     return addressData.address
 }
 
-function getCoinIdFromTokenId(tokenId: string) {
-    return commands.tokens(tokenId).then((token) => token.coinid)
+// returns the coinid for a given tokenid
+// a token can have multiple coins, unless its an NFT
+// this will return the first coin from the list
+function getCoinIdFromNFTTokenId(tokenId: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        commands.coins({ tokenId }).then((response: any) => {
+            if (response.length === 1) {
+                resolve(response[0].coinid)
+            } else {
+                reject('not an NFT')
+            }
+        })
+    })
 }
 
 // gets the smallest coin which satisfies the amount
 // TODO: only looks at a single coin. It is not able to combine multiple coins together from your wallet
 // In fact the smart contract itself can only handle a single coin at a time
 async function getMinimaCoinId(minimaAmount: Decimal) {
-    const coins = await commands.coins({ tokenId: '0x00' })
+    const coins = await commands.coins({ tokenId: '0x00', relevant: true })
 
     const sortedCoins = coins
         .filter((coin) => {
@@ -210,7 +222,7 @@ export const minima_service = {
     postTransaction,
     getMyMaximaAddress,
     getMyWalletAddress,
-    getCoinIdFromTokenId,
+    getCoinIdFromNFTTokenId,
     getMinimaCoinId,
     createAndInsertTable,
     storeMyAuctionId,
