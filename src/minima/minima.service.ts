@@ -6,7 +6,7 @@ import { sql } from './libs/sql'
 import { util } from './util'
 
 const getAllMyNFTs = () => {
-    return commands.getAllMyTokens().then((allTokens) => {
+    return commands.balance().then((allTokens) => {
         return allTokens.filter(isCoinNFTAndSendable)
     })
 }
@@ -40,28 +40,28 @@ const sendTestMessageToFirstContact = (message: string) => {
 }
 
 function createTransaction(id: string) {
-    return commands.createTransaction(id)
+    return commands.txncreate({ id })
 }
 
 function createSellerOutput(txnId: string, sellerAddress: string, minimaAmount: Decimal) {
     // tokenId is minima
-    return commands.createTransactionOutput(txnId, sellerAddress, minimaAmount, '0x00')
+    return commands.txnoutput({ id: txnId, amount: minimaAmount, address: sellerAddress, tokenId: '0x00' })
 }
 
 function createSellerInput(id: string, nftCoinId: string) {
-    return commands.createTransactionInput(id, nftCoinId, true)
+    return commands.txninput({ id, coinid: nftCoinId, scriptmmr: true })
 }
 
 // nft output
 function createBuyerOutput(id: string, buyerAddress: string, nftTokenId: string) {
-    return commands.createTransactionOutput(id, buyerAddress, new Decimal(1), nftTokenId)
+    return commands.txnoutput({ id, amount: new Decimal(1), address: buyerAddress, tokenId: nftTokenId })
 }
 
 // creates buyer minima amount input
 // also creates the output for the change returned
 function createBuyerInput(id: string, minimaCoinId: string, minimaAmount: Decimal, returnAddress: string) {
     return commands
-        .createTransactionInput(id, minimaCoinId, true)
+        .txninput({ id, coinid: minimaCoinId, scriptmmr: true })
         .then(() => {
             return commands.coins({ coinId: minimaCoinId })
         })
@@ -73,33 +73,33 @@ function createBuyerInput(id: string, minimaCoinId: string, minimaAmount: Decima
             if (changeAmount.isZero()) {
                 // do nothing
             } else {
-                return commands.createTransactionOutput(id, returnAddress, changeAmount, '0x00')
+                return commands.txnoutput({ id, amount: changeAmount, address: returnAddress, tokenId: '0x00' })
             }
         })
 }
 
 function exportTransaction(id: string) {
-    return commands.exportTransaction(id)
+    return commands.txnexport({ id })
 }
 
 function importTransaction(data: string) {
-    return commands.importTransaction(data)
+    return commands.txnimport({ data })
 }
 
 function exportTokenId(tokenId: string) {
-    return commands.exportTokenId(tokenId)
+    return commands.tokens({ action: 'export', tokenId })
 }
 
 function importTokenId(data: string) {
-    return commands.importTokenId(data)
+    return commands.tokens({ action: 'import', data })
 }
 
 function signTransaction(id: string) {
-    return commands.signTransaction(id)
+    return commands.txnsign({ id, publicKey: 'auto' })
 }
 
 function postTransaction(id: string) {
-    return commands.postTransaction(id)
+    return commands.txnpost({ id })
 }
 
 async function getMyMaximaAddress() {
@@ -108,7 +108,7 @@ async function getMyMaximaAddress() {
 }
 
 async function getMyWalletAddress() {
-    const addressData = await commands.newAddress()
+    const addressData = await commands.newaddress()
     console.log('getMyWalletAddress ', addressData.address)
     return addressData.address
 }
@@ -204,6 +204,10 @@ function getMyAuctionIds() {
     }
 }
 
+function checkTransaction(txnId: string) {
+    return commands.txncheck({ id: txnId })
+}
+
 export const minima_service = {
     getAllMyNFTs,
     sendMessageToFirstContact,
@@ -228,4 +232,5 @@ export const minima_service = {
     storeMyAuctionId,
     removeMyAuctionId,
     getMyAuctionIds,
+    checkTransaction,
 }

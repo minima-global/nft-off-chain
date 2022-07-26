@@ -280,7 +280,7 @@ export const receiveStepTwoData =
 
 export const signAndPostTransaction =
     (transactionId: string): AppThunk =>
-    (dispatch, getState) => {
+    async (dispatch, getState) => {
         const storedStepTwoData = selectTransactionStepTwoById(transactionId)(getState())
         if (!storedStepTwoData) {
             console.error('incorrect  transaction id')
@@ -289,20 +289,33 @@ export const signAndPostTransaction =
 
         const transactionData = storedStepTwoData.txnData
 
-        minima_service.importTransaction(transactionData).then((data) => {
-            console.log('import transaction data:', data)
+        // import then sign, then check, then post
+        // TODO: need a verify step after import
+        try {
+            const importData = await minima_service.importTransaction(transactionData)
+            console.log('import transaction data:', importData)
             dispatch(enqueueSuccessSnackbar('Transaction Imported'))
 
-            minima_service.signTransaction(transactionId).then((data) => {
-                console.log('sign transaction data:', data)
-                dispatch(enqueueSuccessSnackbar('Transaction Signed'))
+            const signData = await minima_service.signTransaction(transactionId)
+            console.log('sign transaction data:', signData)
+            dispatch(enqueueSuccessSnackbar('Transaction Signed'))
 
-                minima_service.postTransaction(transactionId).then((data) => {
-                    console.log('post transaction data:', data)
-                    dispatch(enqueueSuccessSnackbar('Transaction Posted'))
-                })
-            })
-        }) // TODO failure
+            const checkResponse = await minima_service.checkTransaction(transactionId)
+            console.log('transaction check response', checkResponse)
+            dispatch(enqueueSuccessSnackbar('Transaction Checked Successfully'))
+
+            const postData = await minima_service.postTransaction(transactionId)
+            console.log('post transaction data:', postData)
+            dispatch(enqueueSuccessSnackbar('Transaction Posted'))
+        } catch (err: any) {
+            let error = JSON.stringify(err, null, 2)
+            if (err.error) {
+                error = err.error
+            }
+            const message = 'Transaction Sign and Post Failure, ' + error
+            console.log('ERROR:', message)
+            dispatch(enqueueFailureSnackbar(message))
+        }
     }
 
 // creates actions and reducers
