@@ -34,7 +34,7 @@ const App = () => {
     }, [])
 
     // Decimal.js is used to handle floating point numbers
-    Decimal.set({ precision: 50 })
+    Decimal.set({ precision: 60 })
 
     if (minimaLoaded) {
         return (
@@ -55,19 +55,5 @@ const App = () => {
             </>
         )
     }
-
-    return (
-        <>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <NavigationBar />
-                <Container maxWidth="xl">{myRoutes}</Container>
-
-                <Backdrop open={!minimaLoaded}>
-                    <CircularProgress />
-                </Backdrop>
-            </ThemeProvider>
-        </>
-    )
 }
 export default App

@@ -40,7 +40,7 @@ const AuctionCard = ({ auction }: IProps) => {
                     {auction.nftName}
                 </Typography>
                 <Typography variant="h6" component="div" gutterBottom>
-                    {auction.nftPrice} minima
+                    {auction.nftPrice.toString()} minima
                 </Typography>
                 <Typography sx={{ fontSize: 14 }}>{auction.nftTokenId}</Typography>
             </CardContent>

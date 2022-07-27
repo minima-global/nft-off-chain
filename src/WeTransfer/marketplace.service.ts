@@ -16,7 +16,7 @@ function listNFTForAuction(nft: Token, price: Decimal, sellerId: string, sellerA
         nftDescription: nftDetail.description,
         nftUrl: nftDetail.url,
         nftTokenId: nft.tokenid,
-        nftPrice: price,
+        nftPrice: price.toString(),
         nftSellerId: sellerId,
         detailsJson: nftDetail,
         sellerAddress,

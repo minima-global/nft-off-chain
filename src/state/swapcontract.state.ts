@@ -109,7 +109,7 @@ export const buildStepOne =
             dispatch(smartContractActions.addStepOneData(stepOne))
             dispatch(sendStepOneData(stepOne, buyerAddress))
         } catch (err: any) {
-            const message = 'Transaction Failure, ' + err.error
+            const message = 'Transaction Failure (Step 1), ' + err.error
             dispatch(enqueueFailureSnackbar(message))
         }
     }
@@ -161,33 +161,32 @@ export const receiveStepOneData =
 export const generateStepTwo =
     (stepOneData: StepOne): AppThunk =>
     async (dispatch, getState) => {
-        const step = 2
-        const txnId = stepOneData.txnId
-        const buyerAddress = await minima_service.getMyWalletAddress()
-        const nftAmount = 1
-        const nftTokenId = stepOneData.nftTokenId
-        const minimaAmount = stepOneData.minimaAmount
-        const minimaCoinId = await minima_service.getMinimaCoinId(stepOneData.minimaAmount).then(
-            (x) => x, // do nothing pass through
-            (err) => {
-                dispatch(enqueueFailureSnackbar(err.toString()))
-            }
-        )
-        const txnData = '' // leave empty, will fill in in the build step
+        try {
+            const step = 2
+            const txnId = stepOneData.txnId
+            const buyerAddress = await minima_service.getMyWalletAddress()
+            const nftAmount = 1
+            const nftTokenId = stepOneData.nftTokenId
+            const minimaAmount = stepOneData.minimaAmount
+            const minimaCoinId = await minima_service.getMinimaCoinId(stepOneData.minimaAmount)
+            const txnData = '' // leave empty, will fill in in the build step
 
-        // create step one object and dispatch buildStepOne with it
-        const stepTwo: StepTwo = {
-            step,
-            txnId,
-            buyerAddress,
-            nftAmount,
-            nftTokenId,
-            minimaAmount,
-            minimaCoinId,
-            txnData,
+            // create step one object and dispatch buildStepOne with it
+            const stepTwo: StepTwo = {
+                step,
+                txnId,
+                buyerAddress,
+                nftAmount,
+                nftTokenId,
+                minimaAmount,
+                minimaCoinId,
+                txnData,
+            }
+            dispatch(enqueueSuccessSnackbar('Step Two generated from step one data'))
+            dispatch(buildStepTwo(stepTwo))
+        } catch (err: any) {
+            dispatch(enqueueFailureSnackbar(err.toString()))
         }
-        dispatch(enqueueSuccessSnackbar('Step Two generated from step one data'))
-        dispatch(buildStepTwo(stepTwo))
     }
 
 // turn step two into inputs and outputs
@@ -232,7 +231,7 @@ export const buildStepTwo =
             dispatch(smartContractActions.addStepTwoData(stepTwo))
             dispatch(sendStepTwoData(stepTwo))
         } catch (err: any) {
-            const message = 'Transaction Failure, ' + err.error
+            const message = 'Transaction Failure (Step 2), ' + err.error
             dispatch(enqueueFailureSnackbar(message))
         }
     }

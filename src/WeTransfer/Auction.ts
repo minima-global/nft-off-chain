@@ -6,7 +6,7 @@ export interface AuctionCandidate {
     nftDescription: string
     nftUrl: string
     nftTokenId: string
-    nftPrice: Decimal
+    nftPrice: Decimal | string // we are storing strings in DB
     nftSellerId: string
     detailsJson?: TokenDetails
     sellerAddress: string
@@ -16,3 +16,4 @@ export interface AuctionCandidate {
 export interface AuctionDB extends AuctionCandidate {
     id: number
 }
+

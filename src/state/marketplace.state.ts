@@ -120,4 +120,12 @@ export default marketplaceReducer
 const selectMarketplace = (state: RootState): MarketplaceState => {
     return state.marketplace
 }
-export const getAllAuctions = createSelector(selectMarketplace, (marketplace: MarketplaceState) => marketplace.auctions)
+export const getAllAuctions = createSelector(selectMarketplace, (marketplace: MarketplaceState) => {
+    // convert nft price to decimal
+    return marketplace.auctions.map((auction) => {
+        return {
+            ...auction,
+            nftPrice: new Decimal(auction.nftPrice),
+        }
+    })
+})
